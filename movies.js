@@ -11,6 +11,16 @@ firebase.auth().onAuthStateChanged(async function(user)  {
     })
     console.log(`${user.displayName} logged in`)
 
+    document.querySelector('.sign-in-or-sign-out').innerHTML = `
+    <a href="#" class = "sign-out text-blue-500 underline">Sign Out ${user.displayName}</a>
+    `
+    document.querySelector('.sign-out').addEventListener('click', function(event) {
+      event.preventDefault()
+      firebase.auth().signOut()
+      document.location.href = 'movies.html'
+    })
+
+
   let apiKey = '3c3ce4bbc9f88f6e53ab74009b5fafa4'
   let response = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=en-US`)
   let json = await response.json()
