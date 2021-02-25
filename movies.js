@@ -1,6 +1,17 @@
-window.addEventListener('DOMContentLoaded', async function(event) {
+firebase.auth().onAuthStateChanged(async function(user)  {
+
   let db = firebase.firestore()
-  let apiKey = 'your TMDB API key'
+
+  if (user) {
+  
+
+    db.collection('users').doc(user.uid).set({
+      name: user.displayName,
+      email: user.email
+    })
+    console.log(`${user.displayName} logged in`)
+
+  let apiKey = '3c3ce4bbc9f88f6e53ab74009b5fafa4'
   let response = await fetch(`https://api.themoviedb.org/3/movie/now_playing?api_key=${apiKey}&language=en-US`)
   let json = await response.json()
   let movies = json.results
@@ -28,7 +39,31 @@ window.addEventListener('DOMContentLoaded', async function(event) {
       movieElement.classList.add('opacity-20')
       await db.collection('watched').doc(`${movie.id}`).set({})
     }) 
+  } 
+  } else {
+    console.log('no user')
+      // Initializes FirebaseUI Auth
+      let ui = new firebaseui.auth.AuthUI(firebase.auth())
+
+      // FirebaseUI configuration
+      let authUIConfig = {
+        signInOptions: [
+          firebase.auth.EmailAuthProvider.PROVIDER_ID,
+          firebase.auth.GoogleAuthProvider.PROVIDER_ID
+  
+        ],
+        signInSuccessUrl: 'movies.html'
+      }
+  
+      // Starts FirebaseUI Auth
+      ui.start('.sign-in-or-sign-out', authUIConfig)
   }
+  
+
+
+
+
+
 })
 
 // Goal:   Refactor the movies application from last week, so that it supports
